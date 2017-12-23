@@ -1,0 +1,31 @@
+version: '2'
+
+services:
+
+
+  database:
+    image: postgres
+    environment:
+       - POSTGRES_PASSWORD=password
+
+
+  uwsgi:
+    build:
+      context: .
+    depends_on:
+      - database
+    command: ${COMMAND}
+    volumes:
+      - .:/django
+    environment:
+      - DJANGO_SETTINGS_MODULE
+      - DATABASE_ENGINE
+      - DATABASE_NAME
+      - DATABASE_USER
+      - DATABASE_PASSWORD
+      - DATABASE_HOST
+      - DATABASE_PORT
+      - HUDYA_API_URL
+      - DEBUG
+    ports:
+      - 80:8000
