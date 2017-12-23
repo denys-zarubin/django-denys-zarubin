@@ -1,0 +1,41 @@
+# IDEs
+.project
+.pydevproject
+.idea
+.vscode
+.settings
+
+# Random files
+*~
+\#*
+
+# Enviroment stuff
+.env
+
+virtualenv/
+htmlcov/
+static_dist/
+static/
+
+# Python compiled byte code
+*.pyc
+
+# SQLite3 database
+*.sqlite
+
+# Coverage
+coverage/
+.coverage
+.cache
+coverage.xml
+prospector.xml
+pytest.xml
+
+# static validation files
+.prospector.yml
+.coveragerc
+
+# in case we run shippable tests don't include it
+shippable/
+
+**/__pycache__
