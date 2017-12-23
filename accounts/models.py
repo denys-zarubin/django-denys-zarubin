@@ -1,3 +1,6 @@
+import random
+import string
+
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -51,9 +54,7 @@ class User(AbstractUser):
         self.verified = True
         self.save(update_fields=['verified', ])
 
-    def send_verification_mail(self):
-        link = reverse("accounts-user-verify", kwargs={"email": generate_hash(self.email)})
-        message = f"Click this link {link}"
+    def send_mail(self, message):
         send_mail(
             'Verify your email! ',
             message,
@@ -61,3 +62,15 @@ class User(AbstractUser):
             [self.email],
             fail_silently=False,
         )
+
+    def send_verification_mail(self):
+        link = reverse("accounts-user-verify", kwargs={"email": generate_hash(self.email)})
+        message = f"Click this link {link}"
+        self.send_mail(message)
+
+    def reset_password(self):
+        new_pwd = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+        self.set_password(new_pwd)
+        message = f"Here you are, new password {new_pwd}"
+        self.send_mail(message)
+        self.save(update_fields=['password'])

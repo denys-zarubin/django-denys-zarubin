@@ -34,6 +34,7 @@ class LoginAPIViews(TestCase):
 class RegisterApiView(TestCase):
     def setUp(self):
         self.user = factories.UserFactory(email="john@snow.de")
+        self.hashed_email = generate_hash(self.user.email)
 
     def test_register_user_return_user_information(self):
         url = reverse("accounts-user-register")
@@ -70,9 +71,17 @@ class RegisterApiView(TestCase):
         self.assertEqual(response.data, {'email': ['Enter a valid email address.']})
 
     def test_verify_user_mail(self):
-        hashed_email = generate_hash(self.user.email)
-
-        url = reverse("accounts-user-verify", kwargs={"email": hashed_email})
+        url = reverse("accounts-user-verify", kwargs={"email": self.hashed_email})
         self.assertFalse(self.user.verified)
         response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_reset_user_password(self):
+        url = reverse("accounts-user-reset", kwargs={"email": self.hashed_email})
+        response = self.client.post(url, data={'password': 'new_pass'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_set_user_password(self):
+        url = reverse("accounts-user-password", kwargs={"email": self.hashed_email})
+        response = self.client.post(url, data={'password': 'new_pass'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)

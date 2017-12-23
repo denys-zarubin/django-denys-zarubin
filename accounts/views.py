@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate, login
-from rest_framework import views, status
+from rest_framework import status
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
@@ -19,6 +19,19 @@ class UserViewSet(viewsets.GenericViewSet):
     serializer_class = serializers.UserSerializer
     lookup_field = 'email'
     lookup_url_kwarg = 'email'
+
+    def get_object(self):
+        """
+        Overriden default one, because email with @ or . can be as part of url,
+        RFC-1738
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        filter_kwargs = {
+            self.lookup_field: get_encrypted_email(self.kwargs[lookup_url_kwarg])
+        }
+        obj = get_object_or_404(queryset, **filter_kwargs)
+        return obj
 
     @list_route(methods=['post', ])
     def register(self, request, *args, **kwargs):
@@ -43,10 +56,20 @@ class UserViewSet(viewsets.GenericViewSet):
 
     @detail_route(methods=['get', ])
     def verify(self, request, *args, **kwargs):  # noqa
-        hashed_email = kwargs.get(self.lookup_url_kwarg)
-        self.kwargs.update(
-            {self.lookup_url_kwarg: get_encrypted_email(hashed_email)}
-        )
         user = self.get_object()
         user.set_verified()
+        return Response(status=status.HTTP_200_OK)
+
+    @detail_route(methods=['post', ], url_path='reset')
+    def reset_password(self, request, email):  # noqa
+        user = self.get_object()
+        user.reset_password()
+        return Response(status=status.HTTP_200_OK)
+
+    @detail_route(methods=['post', ], url_path='password')
+    def set_password(self, request, email):  # noqa
+        password = request.data.get('password')
+        user = self.get_object()
+        user.set_password(password)
+        user.save(update_fields=['password'])
         return Response(status=status.HTTP_200_OK)
