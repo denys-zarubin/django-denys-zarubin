@@ -13,3 +13,13 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
         fields = ['email', 'password', 'first_name', 'last_name', 'verified']
+
+
+class TeamSerializer(serializers.ModelSerializer):
+    """
+    Serializer for User model
+    """
+
+    class Meta:
+        model = models.Team
+        fields = ['name', 'members']

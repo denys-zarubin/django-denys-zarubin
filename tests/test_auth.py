@@ -85,3 +85,15 @@ class RegisterApiView(TestCase):
         url = reverse("accounts-user-password", kwargs={"email": self.hashed_email})
         response = self.client.post(url, data={'password': 'new_pass'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class TeamApiView(TestCase):
+    def setUp(self):
+        self.user = factories.UserFactory(email="john@snow.de")
+        self.client.force_login(self.user)
+
+    def test_create_team(self):
+        url = reverse("accounts-team-list")
+        response = self.client.post(url, data={'name': 'new'})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+

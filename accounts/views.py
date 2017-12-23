@@ -1,9 +1,12 @@
 from django.contrib.auth import authenticate, login
+from django.http import Http404, HttpResponseNotAllowed, HttpResponseForbidden
 from rest_framework import status
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.generics import get_object_or_404
+from rest_framework.mixins import CreateModelMixin
 from rest_framework.response import Response
 from rest_framework import viewsets
+from rest_framework.viewsets import GenericViewSet
 
 from accounts import models, serializers
 from core.utils import get_encrypted_email
@@ -73,3 +76,24 @@ class UserViewSet(viewsets.GenericViewSet):
         user.set_password(password)
         user.save(update_fields=['password'])
         return Response(status=status.HTTP_200_OK)
+
+
+class TeamViewSet(CreateModelMixin, GenericViewSet):
+    """
+    Used for creating teams and inviting User to team
+    """
+    # authentication_classes = ()
+    model = models.Team
+    queryset = models.Team.objects.all()
+    serializer_class = serializers.TeamSerializer
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        if user.team:
+            return HttpResponseForbidden(
+                content='You should be not part of team'
+            )
+
+        instance = serializer.save()
+        user.team = instance
+        user.save()
