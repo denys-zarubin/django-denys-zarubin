@@ -13,6 +13,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.User
 
+    is_active = True
     team = factory.SubFactory(TeamFactory)
     email = factory.Sequence(lambda n: "john%03d@snow.com" % n)
     first_name = factory.Sequence(lambda n: "John %03d" % n)

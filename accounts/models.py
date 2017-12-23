@@ -1,9 +1,12 @@
-from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 
 
 class Team(models.Model):
+    """
+    Team model is collection of User models.
+    """
     name = models.CharField(_('name'), max_length=150)
 
     class Meta:
@@ -15,15 +18,19 @@ class Team(models.Model):
         return f"{self.name}"
 
 
-class User(AbstractBaseUser):
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['email', 'password']
-
+class User(AbstractUser):
+    """
+    User model used for as main Authentication Model
+    """
     email = models.EmailField(_('email address'), blank=True, primary_key=True)
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
     verified = models.BooleanField(_('verified'), default=False)
-    team = models.ForeignKey(Team, related_name='members')
+    team = models.ForeignKey(Team, related_name='members', null=True)
+    username = models.CharField(_('username'), max_length=150, blank=True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['password', ]
 
     class Meta:
         ordering = ['first_name', 'last_name']
