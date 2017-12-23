@@ -6,7 +6,7 @@ WORKDIR /django
 COPY requirements requirements
 
 # Cache this
-RUN apk add -U  build-base linux-headers && \
+RUN apk add -U postgresql-dev build-base linux-headers && \
     pip install -r /django/requirements/common.txt && \
     pip install -r /django/requirements/test.txt
 

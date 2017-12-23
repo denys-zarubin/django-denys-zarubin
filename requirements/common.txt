@@ -13,3 +13,6 @@ django-rest-swagger>=2.1.2
 
 # Deployment
 uwsgi
+
+# Database
+psycopg2
