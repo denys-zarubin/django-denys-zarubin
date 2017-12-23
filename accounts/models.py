@@ -1,6 +1,10 @@
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+from django.core.mail import send_mail
+from rest_framework.reverse import reverse
+
+from core.utils import generate_hash
 
 
 class Team(models.Model):
@@ -39,3 +43,21 @@ class User(AbstractUser):
 
     def __unicode__(self):
         return f"{self.first_name} {self.last_name}"
+
+    def set_verified(self):
+        """
+        Set user as verified
+        """
+        self.verified = True
+        self.save(update_fields=['verified', ])
+
+    def send_verification_mail(self):
+        link = reverse("accounts-user-verify", kwargs={"email": generate_hash(self.email)})
+        message = f"Click this link {link}"
+        send_mail(
+            'Verify your email! ',
+            message,
+            'org@de.com',
+            [self.email],
+            fail_silently=False,
+        )

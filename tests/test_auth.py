@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APIClient
 
+from core.utils import generate_hash
 from tests import factories
 
 
@@ -31,10 +32,13 @@ class LoginAPIViews(TestCase):
 
 
 class RegisterApiView(TestCase):
+    def setUp(self):
+        self.user = factories.UserFactory(email="john@snow.de")
+
     def test_register_user_return_user_information(self):
         url = reverse("accounts-user-register")
         test_data = {
-            "email": "john@snow.de",
+            "email": "john_targarian@snow.de",
             "first_name": "John",
             "last_name": "Snow",
             "password": "test1234TEST"
@@ -43,7 +47,6 @@ class RegisterApiView(TestCase):
             url,
             data=test_data
         )
-
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data.get('email'), test_data.get('email'))
         self.assertEqual(response.data.get('first_name'), test_data.get('first_name'))
@@ -65,3 +68,11 @@ class RegisterApiView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIsNotNone(response.data)
         self.assertEqual(response.data, {'email': ['Enter a valid email address.']})
+
+    def test_verify_user_mail(self):
+        hashed_email = generate_hash(self.user.email)
+
+        url = reverse("accounts-user-verify", kwargs={"email": hashed_email})
+        self.assertFalse(self.user.verified)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
