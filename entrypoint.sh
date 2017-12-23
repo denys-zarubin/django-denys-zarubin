@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd /django/accounts/
+cd /django/core/
 # Apply database migrations
 echo "Apply database migrations"
 python manage.py migrate -v 1
