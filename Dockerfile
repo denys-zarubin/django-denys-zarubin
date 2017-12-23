@@ -13,7 +13,7 @@ RUN apk add -U  build-base linux-headers && \
 # Run tests for new code
 COPY . /django
 RUN python -m pytest tests --ds=settings.test  --cov-report=xml --junitxml=/django/pytest.xml  && \
-    prospector --path=src --profile=/django/prospector.yml
+    prospector --path=. --profile=/django/prospector.yml
 
 
 FROM python:alpine

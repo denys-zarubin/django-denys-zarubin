@@ -4,7 +4,7 @@ from rest_framework.test import APITestCase
 
 class HealthCheckTests(APITestCase):
     def test_ok(self):
-        url = reverse('health_check')
+        url = reverse('health_check-list')
         response = self.client.get(
             url
         )
