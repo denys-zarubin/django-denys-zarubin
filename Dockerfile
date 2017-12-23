@@ -30,7 +30,6 @@ RUN apk add -U postgresql-dev build-base linux-headers && \
 
 # Run copy code
 COPY --from=python-base /django/ .
-RUN python manage.py collectstatic -v 0 --noinput --settings=core.settings.base
 
 EXPOSE 8000
 

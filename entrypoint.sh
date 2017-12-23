@@ -1,6 +1,11 @@
 #!/bin/sh
 
-cd /django/core/
+cd /django/
+
+# Collect static Files
+echo "Collect static Files"
+python manage.py collectstatic -v 0 --noinput --settings=core.settings.base
+
 # Apply database migrations
 echo "Apply database migrations"
 python manage.py migrate -v 1
@@ -10,7 +15,5 @@ echo "Starting server"
 uwsgi --http 0.0.0.0:8000 \
       --master \
       --module "django.core.wsgi:get_wsgi_application()" \
-      --disable-logging \
       --static-map /static=/static \
-      $EXTRA
-
+      --py-autoreload 1
