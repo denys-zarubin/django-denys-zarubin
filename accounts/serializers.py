@@ -5,7 +5,7 @@ from accounts import models
 
 class UserSerializer(serializers.ModelSerializer):
     """
-    Serializer for User model 
+    Serializer for User model
     """
     verified = serializers.ReadOnlyField()
     password = serializers.CharField(style={'input_type': 'password'},

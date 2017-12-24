@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate, login
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponseForbidden
 from rest_framework import status
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.generics import get_object_or_404
@@ -38,7 +38,7 @@ class UserViewSet(viewsets.GenericViewSet):
         return obj
 
     @list_route(methods=['post', ], permission_classes=())
-    def register(self, request, *args, **kwargs):
+    def register(self, request, *args, **kwargs):  # noqa
         team = request.META.get('TEAM')
         if team:
             request.data.update({"team": team})
@@ -61,8 +61,7 @@ class UserViewSet(viewsets.GenericViewSet):
         if user is not None:
             login(request, user)
             return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     @detail_route(methods=['get', ])
     def verify(self, request, *args, **kwargs):  # noqa

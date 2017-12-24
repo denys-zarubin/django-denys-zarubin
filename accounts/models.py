@@ -20,7 +20,7 @@ class Team(models.Model):
         verbose_name = _('Team')
         verbose_name_plural = _('Teams')
 
-    def __unicode__(self):
+    def __str__(self):
         return f"{self.name}"
 
 
@@ -46,7 +46,7 @@ class User(AbstractUser):
         verbose_name = _('User')
         verbose_name_plural = _('Users')
 
-    def __unicode__(self):
+    def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
     @staticmethod

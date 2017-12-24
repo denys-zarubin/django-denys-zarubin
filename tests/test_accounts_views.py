@@ -6,7 +6,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APIClient, APITestCase
 
 from core.utils import encode_email
-from tests import factories
+from tests import factories  # noqa 
 
 
 class LoginAPIViews(APITestCase):
