@@ -14,6 +14,6 @@ python manage.py migrate -v 1
 echo "Starting server"
 uwsgi --http 0.0.0.0:8000 \
       --master \
-      --module "django.core.wsgi:get_wsgi_application()" \
+      --module "core.wsgi:get_wsgi_application()" \
       --static-map /static=/static \
       --py-autoreload 1
