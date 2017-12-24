@@ -30,3 +30,19 @@ heroku container:login
 ```
 heroku container:push <docker_image_name> --app x1-development
 ```
+
+# Structure
+
+Docs available with domain
+
+`/docs/`
+
+There you can find discription of all endpoints
+
+# Tests
+
+For tests using `pytests`. To run tests use
+```
+python -m pytest tests --ds=settings.test  --cov-report=xml --junitxml=/django/pytest.xml
+```
+
