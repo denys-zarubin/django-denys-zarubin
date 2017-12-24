@@ -8,11 +8,15 @@ class UserSerializer(serializers.ModelSerializer):
     Serializer for User model 
     """
     verified = serializers.ReadOnlyField()
-    password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+    password = serializers.CharField(style={'input_type': 'password'},
+                                     write_only=True)
+    team = serializers.HiddenField(default=None)
 
     class Meta:
         model = models.User
-        fields = ['email', 'password', 'first_name', 'last_name', 'verified']
+        fields = [
+            'email', 'password', 'first_name', 'last_name', 'verified', 'team'
+        ]
 
 
 class TeamSerializer(serializers.ModelSerializer):

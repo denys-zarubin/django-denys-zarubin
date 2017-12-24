@@ -15,7 +15,6 @@ COPY . /django
 RUN python -m pytest tests --ds=settings.test  --cov-report=xml --junitxml=/django/pytest.xml  && \
     prospector --path=. --profile=/django/prospector.yml
 
-
 FROM python:alpine
 WORKDIR /django
 

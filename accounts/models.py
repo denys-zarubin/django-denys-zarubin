@@ -5,9 +5,8 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.core.mail import send_mail
-from rest_framework.reverse import reverse
 
-from core.utils import generate_hash
+from accounts import managers
 
 
 class Team(models.Model):
@@ -29,6 +28,9 @@ class User(AbstractUser):
     """
     User model used for as main Authentication Model
     """
+
+    objects = managers.AccountsUserManager()
+
     email = models.EmailField(_('email address'), blank=True, primary_key=True)
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
@@ -47,6 +49,18 @@ class User(AbstractUser):
     def __unicode__(self):
         return f"{self.first_name} {self.last_name}"
 
+    @staticmethod
+    def generate_random_password(length=10):
+        """
+        :param: length: Length of password
+        :return: Randomly generated password with [a-Z0-9] symbols
+        """
+        return ''.join(
+            random.choices(
+                string.ascii_uppercase + string.ascii_lowercase + string.digits,
+                k=length)
+        )
+
     def set_verified(self):
         """
         Set user as verified
@@ -54,23 +68,45 @@ class User(AbstractUser):
         self.verified = True
         self.save(update_fields=['verified', ])
 
-    def send_mail(self, message):
-        send_mail(
-            'Verify your email! ',
+    def send_mail(self, message, subject):
+        """
+        :param message:
+        :param subject:
+        :return: Status of sending mail
+        """
+        return send_mail(
+            subject,
             message,
-            'org@de.com',
+            # TODO: CHANGE TO REAL email
+            'super_project@deee.de',
             [self.email],
             fail_silently=False,
         )
 
-    def send_verification_mail(self):
-        link = reverse("accounts-user-verify", kwargs={"email": generate_hash(self.email)})
+    def send_verification_mail(self, link):
+        """
+        :param link: Verification absolute url (type str)
+        :return: status of sending mail. (type int)
+        """
         message = f"Click this link {link}"
-        self.send_mail(message)
+        return self.send_mail(message, subject='Verify your email')
 
     def reset_password(self):
-        new_pwd = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+        """
+        Set new random generated password.
+        """
+        new_pwd = self.generate_random_password()
+        message = _(f"Here you are, new password {new_pwd}")
+        self.send_mail(message, subject='New password')
         self.set_password(new_pwd)
-        message = f"Here you are, new password {new_pwd}"
-        self.send_mail(message)
         self.save(update_fields=['password'])
+
+    def send_invite_to_team(self, link):
+        """
+        :param link: Absolute url with invite to team (type str)
+        :return: status of sending mail (type int)
+        """
+        message = _(
+            f"Please, join our team {self.team.name}. Click this link {link}"
+        )
+        return self.send_mail(message, subject='Join Team')

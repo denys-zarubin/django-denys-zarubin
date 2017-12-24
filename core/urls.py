@@ -17,7 +17,10 @@ if settings.DEBUG:
     # For local development
     from django.views.static import serve
 
-    urlpatterns = [url(r'^docs/', include_docs_urls(title='Api')),
+    urlpatterns = [url(r'^docs/', include_docs_urls(
+        title='Api',
+        permission_classes=(),
+    )),
                    url(r'^static/(?P<path>.*)$', serve, {
                        'document_root': settings.STATIC_ROOT,
                    }), ] + urlpatterns

@@ -1,14 +1,15 @@
-def generate_hash(email):
+import base64
+
+
+def encode_email(email):
     """
     Generate unreadable hash based on email
     """
-    # TODO: Can be used some crypt
-    
-    return email.replace("@", "-").replace('.', '=')
+    return base64.b64encode(email.encode('utf-8'))
 
 
-def get_encrypted_email(email):
+def decode_email(email):
     """
     Return email from unreadable hash
     """
-    return email.replace("-", "@").replace('=', '.')
+    return base64.b64decode(email).decode('utf-8')
